@@ -6,32 +6,13 @@ require("cypress-plugin-tab");
 
 const DEBUG_FLAG = false;
 
-// ***********************************************************
-// This example support/index.js is processed and
-// loaded automatically before your test files.
-//
-// This is a great place to put global configuration and
-// behavior that modifies Cypress.
-//
-// You can change the location of this file or turn off
-// automatically serving support files with the
-// 'supportFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/configuration
-// ***********************************************************
+export default DEBUG_FLAG;
+Cypress.Screenshot.defaults({ screenshotOnRunFailure: DEBUG_FLAG });
 
-// Import commands.js using ES2015 syntax:
-// import './commands';
+// replace the moment.js because of deprecation
+const dayjs = require("dayjs");
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
-
-// You can mock if needed. Example below
-// beforeEach(() => {
-//     cy.server();
-//     cy.route('/countries*', {});
-// })
+Cypress.dayjs = dayjs;
 
 /* returning false here prevents Cypress from failing the test */
 Cypress.on("uncaught:exception", () => false);
@@ -68,12 +49,3 @@ function getItem(selector, counter) {
 Cypress.Commands.add("iFrame", (selector) => {
   getItem(selector, 50);
 });
-
-Cypress.Screenshot.defaults({ screenshotOnRunFailure: DEBUG_FLAG });
-
-export default DEBUG_FLAG;
-
-// replace the moment.js because of deprecation
-const dayjs = require("dayjs");
-
-Cypress.dayjs = dayjs;

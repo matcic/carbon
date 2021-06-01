@@ -18,7 +18,10 @@ export function visitComponentUrl(
   prefix = "",
   env = "story"
 ) {
-  cy.visit(prepareUrl(component, suffix, iFrameOnly, prefix, env));
+  const spy = cy.spy();
+  cy.visit(prepareUrl(component, suffix, iFrameOnly, prefix, env), {
+    onBeforeLoad: spy,
+  });
 }
 
 // eslint-disable-next-line max-params
@@ -30,6 +33,7 @@ export function visitComponentUrlWithParameters(
   path = "",
   nameOfObject = ""
 ) {
+  const spy = cy.spy();
   cy.fixture(`${path}/${json}`).then(($json) => {
     const today = Cypress.dayjs().format("YYYY-MM-DD");
     const el = $json[nameOfObject];
@@ -44,7 +48,9 @@ export function visitComponentUrlWithParameters(
         url += `${prop}:${encodeURIComponent(el[prop])};`;
       }
     }
-    cy.visit(`${prepareUrl(component, story, true, prefix)}${url}`);
+    cy.visit(`${prepareUrl(component, story, true, prefix)}${url}`, {
+      onBeforeLoad: spy,
+    });
   });
 }
 
