@@ -4,9 +4,8 @@ import "cypress-storybook/cypress";
 
 require("cypress-plugin-tab");
 
-const DEBUG_FLAG = false;
+const DEBUG_FLAG = process.env.CI || false;
 
-export default DEBUG_FLAG;
 Cypress.Screenshot.defaults({ screenshotOnRunFailure: DEBUG_FLAG });
 
 // replace the moment.js because of deprecation
