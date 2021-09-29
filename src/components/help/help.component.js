@@ -26,6 +26,7 @@ const Help = ({
   tooltipBgColor,
   tooltipFontColor,
   tooltipFlipOverrides,
+  ariaLabel,
   ...rest
 }) => {
   const helpElement = useRef(null);
@@ -56,7 +57,6 @@ const Help = ({
 
   return (
     <StyledHelp
-      role="tooltip"
       className={className}
       as={tagType}
       href={href}
@@ -84,6 +84,8 @@ const Help = ({
         tooltipBgColor={tooltipBgColor}
         tooltipFontColor={tooltipFontColor}
         tooltipFlipOverrides={tooltipFlipOverrides}
+        ariaLabel={ariaLabel || type}
+        role="tooltip"
         blockFocusBehaviour
       />
     </StyledHelp>
@@ -134,6 +136,8 @@ Help.propTypes = {
       `The \`${propName}\` prop supplied to \`${componentName}\` must be an array containing some or all of ["top", "bottom", "left", "right"].`
     );
   },
+  /** Aria label for accessibility purposes */
+  ariaLabel: PropTypes.string,
 };
 
 Help.defaultProps = {

@@ -30,6 +30,8 @@ export interface HelpProps extends MarginProps {
   tooltipPosition?: "top" | "bottom" | "left" | "right";
   /** Help Icon type */
   type?: IconType;
+  /** Aria label for accessibility purposes */
+  ariaLabel?: string;
 }
 
 declare function Help(props: HelpProps): JSX.Element;
