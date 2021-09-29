@@ -37,6 +37,9 @@ const Icon = React.forwardRef(
       tabIndex,
       isPartOfInput,
       inputSize,
+      role,
+      ariaLabel,
+      blockFocusBehaviour,
       ...rest
     },
     ref
@@ -79,10 +82,11 @@ const Icon = React.forwardRef(
       fontSize,
       isInteractive,
       iconColor,
-      tabIndex,
       type: iconType(),
       ...filterStyledSystemMarginProps(rest),
     };
+
+    const hasTooltip = tooltipMessage && !blockFocusBehaviour;
 
     const icon = (
       <StyledIcon
@@ -92,6 +96,10 @@ const Icon = React.forwardRef(
         data-element={iconType()}
         {...tagComponent("icon", rest)}
         {...styleProps}
+        hasTooltip={hasTooltip}
+        tabIndex={tabIndex || hasTooltip ? 0 : undefined}
+        aria-label={ariaLabel || hasTooltip ? type : undefined}
+        role={role || hasTooltip ? "tooltip" : undefined}
       />
     );
 
@@ -200,7 +208,9 @@ Icon.propTypes = {
   /** @ignore @private */
   inputSize: PropTypes.oneOf(["small", "medium", "large"]),
   /** @ignore @private */
-  tabIndex: PropTypes.oneOfType([PropTypes.number, PropTypes.number]),
+  tabIndex: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  /** @ignore @private */
+  blockFocusBehaviour: PropTypes.bool,
 };
 
 Icon.defaultProps = {

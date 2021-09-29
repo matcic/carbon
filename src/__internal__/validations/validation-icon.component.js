@@ -87,6 +87,7 @@ const ValidationIcon = ({
         }
         isPartOfInput={isPartOfInput}
         inputSize={size}
+        blockFocusBehaviour
       />
     </ValidationIconStyle>
   );

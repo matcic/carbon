@@ -105,6 +105,7 @@ const StyledIcon = styled.span`
     type,
     fontSize,
     disabled,
+    hasTooltip,
   }) => {
     let finalColor;
     let finalHoverColor;
@@ -192,6 +193,13 @@ const StyledIcon = styled.span`
         
         display: block;
       }
+
+      ${hasTooltip &&
+      `
+        :focus {
+          outline: 2px solid ${theme.colors.focus};
+        }
+      `}
 
       ${margin}
     `;
