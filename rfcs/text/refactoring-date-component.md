@@ -43,7 +43,6 @@ The new implementation will be written as a functional component and only suppor
           value={value}
           onChange={handleChange}
           onBlur={handleBlur}
-          picker={(pickerProps) => <Picker {...pickerProps} />}
         />
       </I18nProvider>
     );
@@ -84,7 +83,7 @@ As the number of consumers of the library has grown this has led to a lot of [is
 
 # Detailed design
 
-The date passed to the picker component can be updated through a `useEffect` hook that checks the current value in the input is both a valid format (based on the value recieved from the locale context) and parses to a valid Date. As such the component will be able to maintain a significantly reduced amount of internal state for the `selectedDate` and the `open` state for the picker component. The `Picker` will be implemented via a render prop to support composition rather than rendered internally, to support better flexibility across different screen sizes and UI layouts. Utilising a render prop pattern will ensure we are able to pass the props into the `Picker` to allow it to work with the input. Furthermore, using a compositional approach will also make it easier for us to support any future feature requests we may receive relating to the `Picker` component.
+The date passed to the picker component can be updated through a `useEffect` hook that checks the current value in the input is both a valid format (based on the value recieved from the locale context) and parses to a valid Date. As such the component will be able to maintain a significantly reduced amount of internal state for the `selectedDate` and the `open` state for the picker component. The `DatePicker` will be baked into the `Date` component and we will surface the interface defined in the [react-day-picker](https://react-day-picker.js.org/api/DayPicker) docs via a `pickerProps` object and as such it can be moved to an `__internal__` directory: we will also include a link to `react-day-picker` documentations in our prop tables.
 
 ```jsx
   // src/components/date/date.component.js
@@ -96,7 +95,7 @@ The date passed to the picker component can be updated through a `useEffect` hoo
     formatISOString
   } from "./__internal__/date-utils"
 
-  const DateInput = ({ value, onChange, onBlur, onFocus, inputProps, picker, ...rest }) => {
+  const DateInput = ({ value, onChange, onBlur, onFocus, inputProps, picker, pickerProps, ...rest }) => {
     const locale = useContext(LocaleContext);
     const { date } = locale;
     const format = date.formats.javascript();
@@ -119,7 +118,13 @@ The date passed to the picker component can be updated through a `useEffect` hoo
           onClick={handleOnClickHandler}
           {...inputProps}
         />
-        {picker && picker(value, selectedDate, open, onDayClick)}
+        <DatePicker
+          {...pickerProps}
+          value={value}
+          selectedDate={selectedDate}
+          open={open}
+          onDayClick={onDayClick}
+        />
       </div>
     );
   };
@@ -222,7 +227,7 @@ Whilst we will continue to support the same custom event object, we will remove 
 
 ## DatePicker component
 
-We will continue to use the same sub-components such as `Navbar` and `Weekday`, although they should be moved to an `__internal__` directory of the `Picker` component as they will never need to be directly imported by consuming projects. The `containerProps` prop provides an interface for implementing keyboard accessibility within the picker (`tabIndex`, `onKeyDown` and so on). The [locale interface](https://react-day-picker.js.org/docs/localization) surfaced by `react-day-picker` will be integrated with `date-fns/locale` to override the translations strings. Below is an example of how translating weekdays can be achieved using the locales surfaced from `date-fns/locale`. It is also possible to generate an array of `months` based on the locale string.
+We will continue to use the same sub-components such as `Navbar` and `Weekday`, although they should be moved to an `__internal__` directory of the `DatePicker` component as they will never need to be directly imported by consuming projects. The `containerProps` prop provides an interface for implementing keyboard accessibility within the picker (`tabIndex`, `onKeyDown` and so on). The [locale interface](https://react-day-picker.js.org/docs/localization) surfaced by `react-day-picker` will be integrated with `date-fns/locale` to override the translations strings. Below is an example of how translating weekdays can be achieved using the locales surfaced from `date-fns/locale`. It is also possible to generate an array of `months` based on the locale string.
 
 ```js
   const renderWeekdayElement = (weekdayElementProps) => {
@@ -242,7 +247,59 @@ We will continue to use the same sub-components such as `Navbar` and `Weekday`, 
   const months = Array.from({ length: 12 }).map((_, i) => localize.month(i))
 ```
 
-As with the existing component we will store a `lastValidValue` in internal state and use that to control the date displayed in the `DatePicker`. This can be achieved by leveraging a `useEffect` hook to update the state value if a new `inputValue` parses to a valid Date. We will also keep the same implementation the current component has with regards to rendering the `DatePicker` in a `portal` using the existing `Popover` component.
+As with the existing component we will store a `lastValidValue` in internal state and use that to control the date displayed in the `DatePicker`. This can be achieved by leveraging a `useEffect` hook to update the state value if a new `inputValue` parses to a valid Date. We will also keep the same implementation the current component has with regards to rendering the `DatePicker` in a `portal` using the existing `Popover` component. To support additional features we will expose the `react-day-picker` interface via the `pickerProps`. For example, the following [feature request](https://github.com/Sage/carbon/issues/4275) can be supported this by utilising the [captionElement](https://react-day-picker.js.org/examples/elements-year-navigation) render prop, although we would implement this via a boolean prop and handle the the composition internally ustilising Carbon's existing `Select` component: below is an example of how this can be achieved.
+
+```js
+const YearMonthForm = ({
+  date = new Date(),
+  months,
+  onChange,
+  minDate,
+  maxDate,
+}) => {
+  const currentYear = date.getFullYear();
+  const toMonth = maxDate || new Date(currentYear + 10, 11);
+  const fromMonth = minDate || new Date(currentYear, 0);
+  const years = [];
+  
+  for (let i = fromMonth.getFullYear(); i <= toMonth.getFullYear(); i += 1) {
+    years.push(i);
+  }
+
+  const handleChange = (ev) => {
+    const { year, month } = ev.target.form;
+
+    const yearValue = year?.value || date.getFullYear();
+    const monthValue = month?.value || date.getMonth();
+    const dayValue = date.getDate();
+
+    onChange(new Date(yearValue, monthValue, dayValue));
+  };
+
+  return (
+    <form>
+      {renderMonth && (
+        <Select name="month" onChange={handleChange} value={date.getMonth()}>
+          {months.map((month, i) => (
+            <Option key={month} value={i}>
+              {month}
+            </Option>
+          ))}
+        </select>
+      )}
+      {renderYear && (
+        <Select name="year" onChange={handleChange} value={date.getFullYear()}>
+          {years.map((year) => (
+            <Option key={year} value={year}>
+              {year}
+            </Option>
+          ))}
+        </select>
+      )}
+    </form>
+  );
+}
+```
 
 ```jsx
   // date/__internal__/date-picker/date-picker.component.js
@@ -252,12 +309,15 @@ As with the existing component we will store a `lastValidValue` in internal stat
     parseToDate
   } from "./__internal__/date-utils";
 
-  const Picker = ({
+  const DatePicker = ({
     inputValue,
     selectedDate,
+    setSelectedDate,
     onDayClick,
     isOpen,
-    disablePortal
+    disablePortal,
+    displaySelectControls,
+    pickerProps
   }) => {
     const [lastValidValue, setLastValidValue] = useState(inputValue);
     const { locale, date } = useContext(LocaleContext);
@@ -267,6 +327,21 @@ As with the existing component we will store a `lastValidValue` in internal stat
     const { weekStartsOn } = options;
 
     if (!isOpen) return null;
+
+    const renderCaptionElement = () => {
+      const { minDate, maxDate } = pickerProps;
+      return (
+        <YearMonthForm
+          date={selectedDate}
+          months={months}
+          onChange={setSelectedDate}
+          minDate={minDate}
+          maxDate={maxDate}
+        />
+      );
+    };
+
+    const captionElement = displaySelectControls ? renderCaptionElement() : undefined;
 
     useEffect(() => {
       // check if inputValue parses to valid date and update lastValidValue string if true
@@ -280,7 +355,7 @@ As with the existing component we will store a `lastValidValue` in internal stat
       <Popover
         ...
       >
-      <StyledDayPicker>
+      <StyledDatePicker>
         <DayPicker
           firstDayOfWeek={weekStartsOn}
           onDayClick={onDayClick}
@@ -288,9 +363,10 @@ As with the existing component we will store a `lastValidValue` in internal stat
           month={parseToDate(lastValidValue, format)}
           weekdayElement={renderWeekdayElement}
           months={months}
-          ...
+          captionElement={captionElement}
+          {...pickerProps}
         />
-      </StyledDayPicker>
+      </StyledDatePicker>
     </Popover>
     );
   };
