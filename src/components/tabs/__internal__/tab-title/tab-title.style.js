@@ -86,10 +86,7 @@ const StyledTitleContent = styled.div`
     css`
       font-size: 16px;
       padding: 22px 24px;
-      ${!isTabSelected &&
-      !alternateStyling &&
-      (error || warning || info) &&
-      `margin-right: -2px;`}
+      ${!isTabSelected && !alternateStyling && error && `margin-right: -2px;`}
     `}
 
     ${size === "default" &&
@@ -105,7 +102,7 @@ const StyledTitleContent = styled.div`
       ${position === "left" &&
       !isTabSelected &&
       !alternateStyling &&
-      (error || warning || info) &&
+      error &&
       `margin-right: -2px;`}
     `}
   `}
@@ -303,31 +300,40 @@ const StyledTabTitle = styled.li`
   height: 100%;
   position: relative;
 
-  ${({ position, borders, noRightBorder, noLeftBorder }) => `
-      ${
-        position === "top" &&
-        css`
-          ${borders &&
-          !(noRightBorder || noLeftBorder) &&
-          css`
-            &:not(:first-of-type) {
-              margin-left: -1px;
-            }
-          `}
-        `
-      }
-      ${
-        position === "left" &&
-        css`
-          ${borders &&
-          css`
-            &:not(:first-of-type) {
-              margin-top: -1px;
-            }
-          `}
-        `
-      }
+  ${({
+    position,
+    borders,
+    noRightBorder,
+    noLeftBorder,
+    warning,
+    info,
+    theme,
+  }) => css`
+    ${position === "top" &&
+    css`
+      ${borders &&
+      !(noRightBorder || noLeftBorder) &&
+      css`
+        &:not(:first-of-type) {
+          margin-left: -1px;
+        }
+      `}
+
+      ${(warning || info) &&
+      css`
+        background-color: ${theme.colors.white};
+      `}
     `}
+    ${position === "left" &&
+    css`
+      ${borders &&
+      css`
+        &:not(:first-of-type) {
+          margin-top: -1px;
+        }
+      `}
+    `}
+  `}
 
   &:first-child {
     margin-left: 0;
@@ -448,6 +454,12 @@ const StyledTabTitle = styled.li`
       &:hover {
         ${alternateStyling && `border-right-color: ${theme.tab.background};`}
       }
+
+      ${(warning || info) &&
+      css`
+        border-right: none;
+        background-color: ${theme.colors.white};
+      `}
 
       ${({ isTabSelected }) =>
         isTabSelected &&
