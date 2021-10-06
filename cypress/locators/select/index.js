@@ -19,7 +19,7 @@ export const selectList = () => cy.get(SELECT_LIST);
 export const selectOption = (index) => cy.get(SELECT_OPTIONS).eq(index);
 export const dropdownButton = () => cy.get(DROPDOWN_BUTTON);
 export const simpleSelect = () => cy.get(SELECT);
-export const simpleSelectBySize = (size) => cy.get(`id=${size}`);
+export const simpleSelectBySize = (size) => cy.get(`[id="${size}"]`);
 export const openOnFocusID = () => cy.get(OPEN_ON_FOCUS_ID);
 export const multiSelectPill = () => cy.get(PILL_PREVIEW);
 export const multiSelectPillByPosition = (index) =>

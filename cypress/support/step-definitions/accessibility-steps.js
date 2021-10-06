@@ -79,10 +79,17 @@ When(
             }
 
             // expand the select component
-            if (componentName.startsWith("select")) {
+            if (componentName === "select") {
               if (componentName.startsWith("select-size")) {
                 simpleSelectBySize(story).click({ multiple: true });
               }
+              if (story === "required") {
+                simpleSelectBySize(`${story}-select`).click();
+              }
+              if (story === "controlled") {
+                simpleSelectBySize(story).click();
+              }
+            } else {
               simpleSelect().click({ multiple: true });
             }
             cy.injectAxe()
