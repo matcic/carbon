@@ -83,10 +83,13 @@ const Icon = React.forwardRef(
       isInteractive,
       iconColor,
       type: iconType(),
+      tabIndex,
       ...filterStyledSystemMarginProps(rest),
     };
 
     const hasTooltip = tooltipMessage && !blockFocusBehaviour;
+
+    console.log(tabIndex);
 
     const icon = (
       <StyledIcon
@@ -95,9 +98,9 @@ const Icon = React.forwardRef(
         className={className || null}
         data-element={iconType()}
         {...tagComponent("icon", rest)}
+        tabIndex={hasTooltip ? 0 : undefined}
         {...styleProps}
         hasTooltip={hasTooltip}
-        tabIndex={tabIndex || hasTooltip ? 0 : undefined}
         aria-label={ariaLabel || hasTooltip ? type : undefined}
         role={role || hasTooltip ? "tooltip" : undefined}
       />
