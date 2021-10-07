@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 import useScrollBlock from "../../hooks/__internal__/useScrollBlock";
-import Events from "../../utils/helpers/events";
 import Portal from "../portal";
+import Events from "../../__internal__/utils/helpers/events";
 import ModalManager from "./__internal__/modal-manager";
 import { StyledModal, StyledModalBackground } from "./modal.style";
 
