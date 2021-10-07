@@ -1,6 +1,6 @@
 import { useRef, useCallback, useMemo } from "react";
 
-import guid from "../../../utils/helpers/guid";
+import guid from "../../../__internal__/utils/helpers/guid";
 import ScrollBlockManager from "./scroll-block-manager";
 
 const scrollBlockManager = new ScrollBlockManager();
