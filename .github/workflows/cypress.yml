@@ -98,7 +98,7 @@ jobs:
           browser: chrome
           spec: |
             cypress/features/regression/common/*
-            cypress/features/regression/themes/themes.feature
+            cypress/features/regression/themes/*
         env:
           COMMIT_INFO_BRANCH: ${{ fromJson(steps.get_pull.outputs.data).head.label }}
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
