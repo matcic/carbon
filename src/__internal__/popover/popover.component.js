@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { createPopper } from "@popperjs/core";
 
 import useResizeObserver from "../../hooks/__internal__/useResizeObserver";
+import StyledBackdrop from "./popover.style";
 
 const Popover = ({
   children,
@@ -12,6 +13,7 @@ const Popover = ({
   reference,
   onFirstUpdate,
   modifiers,
+  disableBackgroundUI,
 }) => {
   const elementDOM = useRef();
   if (!elementDOM.current && !disablePortal) {
@@ -75,6 +77,10 @@ const Popover = ({
     };
   }, [disablePortal]);
 
+  if (disableBackgroundUI) {
+    content = <StyledBackdrop>{content}</StyledBackdrop>;
+  }
+
   if (disablePortal) {
     return content;
   }
@@ -103,11 +109,13 @@ Popover.propTypes = {
     "left-start",
     "left-end",
   ]),
+  // Disables interaction with background UI
+  disableBackgroundUI: PropTypes.bool,
   // Optional modifiers array, for more information and object structure go to:
   // https://popper.js.org/docs/v2/constructors/#modifiers
   modifiers: PropTypes.array,
-  // Optional onFirstUpdate funcition, for more information go to:
-  // https://popper.js.org/docs/v2/constructors/#modifiers
+  // Optional onFirstUpdate function, for more information go to:
+  // https://popper.js.org/docs/v2/lifecycle/#hook-into-the-lifecycle
   onFirstUpdate: PropTypes.func,
   // When true, children are not rendered in portal
   disablePortal: PropTypes.bool,

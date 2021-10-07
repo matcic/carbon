@@ -499,7 +499,6 @@ const MultiSelect = React.forwardRef(
       <StyledSelectMultiSelect
         aria-expanded={isOpen}
         aria-haspopup="listbox"
-        ref={containerRef}
         disabled={disabled}
         readOnly={readOnly}
         hasTextCursor
@@ -507,16 +506,18 @@ const MultiSelect = React.forwardRef(
         data-component={dataComponent}
         data-role={dataRole}
         data-element={dataElement}
+        isOpen={isOpen}
         {...filterStyledSystemMarginProps(textboxProps)}
       >
-        <SelectTextbox
-          aria-controls={isOpen ? selectListId.current : ""}
-          type="text"
-          labelId={labelId.current}
-          positionedChildren={disablePortal && isOpen && selectList}
-          {...getTextboxProps()}
-        />
-        {!disablePortal && isOpen && selectList}
+        <div ref={containerRef}>
+          <SelectTextbox
+            aria-controls={isOpen ? selectListId.current : ""}
+            type="text"
+            labelId={labelId.current}
+            {...getTextboxProps()}
+          />
+        </div>
+        {isOpen && selectList}
       </StyledSelectMultiSelect>
     );
   }

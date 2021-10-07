@@ -5,6 +5,7 @@ import { createPopper } from "@popperjs/core";
 
 import useResizeObserver from "../../hooks/__internal__/useResizeObserver";
 import Popover from "./popover.component";
+import StyledBackdrop from "./popover.style";
 
 jest.mock("@popperjs/core");
 jest.mock("../../hooks/__internal__/useResizeObserver");
@@ -73,6 +74,20 @@ describe("Popover", () => {
       const child = document.createElement("div");
 
       expect(removeChildSpy).toHaveBeenCalledWith(child);
+    });
+  });
+
+  describe("disableBackgroundUI", () => {
+    it("renders content as a child of backdrop when background is disabled", () => {
+      const wrapper = mount(<Component disableBackgroundUI />);
+      expect(
+        wrapper.find(StyledBackdrop).find("#popover-children").exists()
+      ).toBe(true);
+    });
+
+    it("does not render backdrop when background is not disabled", () => {
+      const wrapper = mount(<Component />);
+      expect(wrapper.find(StyledBackdrop).exists()).toBe(false);
     });
   });
 
