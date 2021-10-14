@@ -44,14 +44,16 @@ const FocusTrap = ({
     if (wrapperRef) {
       const ref = wrapperRef.current;
 
-      const elements = Array.from(
-        ref.querySelectorAll(defaultFocusableSelectors)
-      ).filter((el) => Number(el.tabIndex) !== -1);
+      if (ref) {
+        const elements = Array.from(
+          ref.querySelectorAll(defaultFocusableSelectors)
+        ).filter((el) => Number(el.tabIndex) !== -1);
 
-      if (hasNewInputs(elements)) {
-        setFocusableElements(Array.from(elements));
-        setFirstElement(elements[0]);
-        setLastElement(elements[elements.length - 1]);
+        if (hasNewInputs(elements)) {
+          setFocusableElements(Array.from(elements));
+          setFirstElement(elements[0]);
+          setLastElement(elements[elements.length - 1]);
+        }
       }
     }
   }, [hasNewInputs, wrapperRef]);
